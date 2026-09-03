@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - EcoMart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+
+    <header>
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">E</div>
+                <span>EcoMart</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Marketplace</a></li>
+                <li><a href="dashboard.html" class="nav-link active">My Dashboard</a></li>
+                <li><a href="admin.html" class="nav-link" style="color: #38bdf8;">Admin Panel</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container dashboard-layout">
+        <aside class="sidebar">
+            <h3 class="sidebar-title">Student Dashboard</h3>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html" class="sidebar-link active">📊 Overview & Listings</a></li>
+                <li><a href="cart.html" class="sidebar-link">🛒 Shopping Cart</a></li>
+                <li><a href="index.html" class="sidebar-link">🛍️ Browse Marketplace</a></li>
+            </ul>
+        </aside>
+
+        <div class="dashboard-content">
+            <div class="dashboard-header">
+                <div>
+                    <h1 style="font-weight: 800; font-size: 1.8rem; color: #0f172a;">Student Dashboard</h1>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Manage your active listings, Study Video Packs, and simulated purchases.</p>
+                </div>
+                <button class="btn btn-primary" onclick="document.getElementById('add-modal').classList.add('active')">+ Add Listing</button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Active Listings</span>
+                    <span class="stat-value" id="stat-listings-count">6</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Simulated Sales</span>
+                    <span class="stat-value" style="color: var(--success);">LKR 12,400</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Student Eco-Points</span>
+                    <span class="stat-value" style="color: var(--primary);">150 Pts</span>
+                </div>
+            </div>
+
+            <!-- Purchase History Section -->
+            <h2 style="font-weight: 800; font-size: 1.4rem; color: #0f172a; margin-bottom: 15px;">Simulated Purchase History & Video Streams</h2>
+            <div class="table-container" style="margin-bottom: 40px;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Items Purchased</th>
+                            <th>Payment Option</th>
+                            <th>Total Spent</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchases-table-body">
+                        <!-- Dynamic Purchase Rows rendered via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/products-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const purchases = JSON.parse(localStorage.getItem('nsbm_purchases') || '[]');
+            const tbody = document.getElementById('purchases-table-body');
+
+            // Default seed purchase for testing instant video streaming
+            if (purchases.length === 0) {
+                purchases.push({
+                    order_id: 10482,
+                    product_id: 6,
+                    title: 'Python OOP & Algorithms Video Masterclass - Plymouth Computing',
+                    price: 1800.00,
+                    payment_method: 'card',
+                    created_at: new Date().toLocaleDateString()
+                });
+            }
+
+            tbody.innerHTML = purchases.map(p => `
+                <tr>
+                    <td>#NSBM-${p.order_id}</td>
+                    <td><strong>${escapeHtml(p.title)}</strong></td>
+                    <td><span class="badge badge-approved" style="font-size: 0.72rem;">💳 ${p.payment_method || 'Card'}</span></td>
+                    <td><strong>LKR ${numberFormat(p.price)}</strong></td>
+                    <td>${p.created_at}</td>
+                    <td>
+                        <a href="watch.html?id=${p.product_id || 6}" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.78rem; background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);">
+                            ▶️ Watch Online
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+        });
+    </script>
+</body>
+</html>

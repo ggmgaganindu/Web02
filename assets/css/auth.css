@@ -1,0 +1,285 @@
+/* Cinematic Sliding Auth Layout CSS */
+
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 180px);
+    padding: 60px 0;
+    background: radial-gradient(circle at 50% 30%, rgba(0, 180, 216, 0.12) 0%, rgba(15, 23, 42, 0.02) 70%);
+}
+
+.auth-container {
+    background-color: #ffffff;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.18);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    position: relative;
+    overflow: hidden;
+    width: 900px;
+    max-width: 100%;
+    min-height: 560px;
+}
+
+.form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sign-in-container {
+    left: 0;
+    width: 50%;
+    z-index: 2;
+}
+
+.sign-up-container {
+    left: 0;
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+}
+
+/* Active transitions */
+.auth-container.active .sign-in-container {
+    transform: translateX(100%);
+}
+
+.auth-container.active .sign-up-container {
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 5;
+    animation: show 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes show {
+    0%, 49.99% {
+        opacity: 0;
+        z-index: 1;
+    }
+    50%, 100% {
+        opacity: 1;
+        z-index: 5;
+    }
+}
+
+/* Form styling */
+.auth-form {
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 54px;
+    height: 100%;
+    text-align: center;
+}
+
+.auth-form h1 {
+    font-weight: 800;
+    font-size: 2.2rem;
+    font-family: 'Space Grotesk', sans-serif;
+    margin-bottom: 16px;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+}
+
+.social-container {
+    margin: 8px 0 18px;
+    display: flex;
+    gap: 12px;
+}
+
+.social-icon {
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 4px;
+    height: 42px;
+    width: 42px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: var(--transition);
+    background-color: var(--bg-main);
+}
+
+.social-icon:hover {
+    background: var(--primary-gradient);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+    transform: translateY(-2px);
+}
+
+.auth-form span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    font-weight: 500;
+}
+
+.auth-form input {
+    background-color: #f1f5f9;
+    border: 1px solid transparent;
+    padding: 14px 18px;
+    margin: 7px 0;
+    width: 100%;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: var(--transition);
+}
+
+.auth-form input:focus {
+    outline: none;
+    background-color: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.15);
+}
+
+.auth-form a {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 14px 0;
+    font-weight: 600;
+}
+
+.auth-form a:hover {
+    color: var(--primary-dark);
+}
+
+/* Overlay Styling (Cinematic Wave Gradient) */
+.overlay-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+}
+
+.auth-container.active .overlay-container {
+    transform: translateX(-100%);
+}
+
+.overlay {
+    background: linear-gradient(135deg, #090d16 0%, #0077b6 60%, #00b4d8 100%);
+    color: #ffffff;
+    position: relative;
+    left: -100%;
+    height: 100%;
+    width: 200%;
+    transform: translateX(0);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-container.active .overlay {
+    transform: translateX(50%);
+}
+
+.overlay-panel {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 48px;
+    text-align: center;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    transform: translateX(0);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.overlay-left {
+    transform: translateX(-20%);
+}
+
+.auth-container.active .overlay-left {
+    transform: translateX(0);
+}
+
+.overlay-right {
+    right: 0;
+    transform: translateX(0);
+    border-radius: 140px 0 0 140px;
+    background: linear-gradient(135deg, #0f172a 0%, #0077b6 100%);
+    transition: border-radius 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-container.active .overlay-right {
+    transform: translateX(20%);
+}
+
+.auth-container.active .overlay-left {
+    border-radius: 0 140px 140px 0;
+    background: linear-gradient(135deg, #0077b6 0%, #0f172a 100%);
+}
+
+.overlay-panel h1 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    margin-bottom: 16px;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+}
+
+.overlay-panel p {
+    font-size: 0.98rem;
+    margin-bottom: 32px;
+    line-height: 1.6;
+    color: #cbd5e1;
+}
+
+.btn-ghost {
+    background-color: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    color: #ffffff;
+    padding: 12px 34px;
+    border-radius: 9999px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    backdrop-filter: blur(10px);
+}
+
+.btn-ghost:hover {
+    background-color: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+    .auth-container {
+        width: 100%;
+        min-height: 500px;
+    }
+    
+    .overlay-container {
+        display: none;
+    }
+    
+    .sign-in-container, .sign-up-container {
+        width: 100%;
+    }
+    
+    .auth-container.active .sign-in-container {
+        display: none;
+    }
+    
+    .auth-container.active .sign-up-container {
+        transform: none;
+        width: 100%;
+    }
+}

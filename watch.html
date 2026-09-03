@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Video Learning Portal - EcoMart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">E</div>
+                <span>EcoMart</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Marketplace</a></li>
+                <li><a href="dashboard.html" class="nav-link">My Dashboard</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container" style="padding: 40px 24px 80px;" id="watch-container">
+        <!-- Rendered dynamically via JS -->
+    </div>
+
+    <script src="assets/js/products-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id') || 6;
+            const products = getProducts();
+            const product = products.find(p => p.id == productId) || products[5];
+
+            const playlist = product.lesson_playlist || [
+                { title: "Lesson 1: Introduction & Concepts Overview", url: product.video_url || "https://www.youtube.com/embed/gfkTfcpWqAY", duration: "45 mins" },
+                { title: "Lesson 2: Practical Lab Exercises & Worked Examples", url: "https://www.youtube.com/embed/HXV3zeQKqGY", duration: "1 hr 10 mins" },
+                { title: "Lesson 3: Past Exam Solution Walkthrough", url: "https://www.youtube.com/embed/1v0mK5Z4_5M", duration: "55 mins" }
+            ];
+
+            const container = document.getElementById('watch-container');
+            container.innerHTML = `
+                <div style="margin-bottom: 24px;">
+                    <a href="dashboard.html" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.88rem;">← Back to My Dashboard</a>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #0f172a 0%, #0077b6 100%); border-radius: var(--radius-md); padding: 28px 32px; color: white; margin-bottom: 30px; box-shadow: var(--shadow-md);">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+                        <span class="badge badge-approved" style="background: rgba(255,255,255,0.2); color: white;">🎥 Purchased Study Video Pack</span>
+                        <span class="badge badge-dept" style="background: rgba(255,255,255,0.15); color: white; border-color: rgba(255,255,255,0.3);">💻 ${escapeHtml(product.department)} Dept.</span>
+                        <span class="badge badge-uni" style="background: rgba(255,255,255,0.15); color: white; border-color: rgba(255,255,255,0.3);">🎓 ${escapeHtml(product.university)} Stream</span>
+                    </div>
+
+                    <h1 style="font-size: 2.2rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; line-height: 1.25;">${escapeHtml(product.title)}</h1>
+                    <p style="color: #cbd5e1; font-size: 1rem; margin-top: 8px; max-width: 750px;">${escapeHtml(product.description)}</p>
+                </div>
+
+                <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                    <div style="flex: 2; min-width: 320px;">
+                        <div style="background: #0f172a; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-lg);">
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+                                <iframe id="main-video-player" src="${playlist[0].url}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+                            </div>
+                            <div style="padding: 24px; color: white; background: #090d16;">
+                                <span style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: #38bdf8; font-weight: 800;">NOW STREAMING</span>
+                                <h3 id="current-lesson-title" style="font-size: 1.4rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-top: 4px;">${escapeHtml(playlist[0].title)}</h3>
+                                <div style="display: flex; gap: 16px; font-size: 0.85rem; color: #94a3b8; margin-top: 8px;">
+                                    <span>⏱️ Duration: <strong id="current-lesson-duration" style="color: white;">${playlist[0].duration}</strong></span>
+                                    <span>Instructor: <strong style="color: white;">${escapeHtml(product.seller_name)}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="flex: 1; min-width: 280px;">
+                        <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-sm); height: fit-content;">
+                            <h3 style="font-size: 1.25rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 18px;">
+                                📚 Course Playlist (${playlist.length} Modules)
+                            </h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                ${playlist.map((item, idx) => `
+                                    <div class="playlist-item ${idx === 0 ? 'active' : ''}" onclick="switchLesson('${item.url}', '${escapeHtml(item.title)}', '${item.duration}', this)" style="padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid ${idx === 0 ? 'var(--primary)' : 'var(--border)'}; cursor: pointer; background: ${idx === 0 ? '#f0f9ff' : 'var(--bg-main)'};">
+                                        <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">▶️ ${escapeHtml(item.title)}</strong>
+                                        <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-top: 4px; display: block;">⏱️ ${item.duration}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        function switchLesson(url, title, duration, el) {
+            document.querySelectorAll('.playlist-item').forEach(i => {
+                i.style.background = 'var(--bg-main)';
+                i.style.borderColor = 'var(--border)';
+            });
+            el.style.background = '#f0f9ff';
+            el.style.borderColor = 'var(--primary)';
+            document.getElementById('main-video-player').src = url;
+            document.getElementById('current-lesson-title').textContent = title;
+            document.getElementById('current-lesson-duration').textContent = duration;
+        }
+    </script>
+</body>
+</html>

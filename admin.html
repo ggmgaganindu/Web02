@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Moderation Control Panel - EcoMart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+
+    <header>
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">E</div>
+                <span>EcoMart Admin</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Marketplace</a></li>
+                <li><a href="dashboard.html" class="nav-link">Student Portal</a></li>
+                <li><a href="admin.html" class="nav-link active" style="color: #38bdf8;">Admin Control Panel</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container dashboard-layout">
+        <aside class="sidebar">
+            <h3 class="sidebar-title">Admin Controls</h3>
+            <ul class="sidebar-menu">
+                <li><a href="admin.html" class="sidebar-link active">📊 Dashboard Overview</a></li>
+                <li><a href="index.html" class="sidebar-link">🛍️ Public Marketplace</a></li>
+            </ul>
+        </aside>
+
+        <div class="dashboard-content">
+            <div class="dashboard-header">
+                <div>
+                    <h1 style="font-weight: 800; font-size: 1.8rem; color: #0f172a;">Admin Moderation Queue</h1>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Review submissions and Study Video Packs before publishing live.</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Total Approved Listings</span>
+                    <span class="stat-value" style="color: var(--success);">11</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Pending Moderation</span>
+                    <span class="stat-value" style="color: var(--warning);">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Students</span>
+                    <span class="stat-value" style="color: var(--primary);">250</span>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Item Details</th>
+                            <th>Seller</th>
+                            <th>Category & Stream</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body">
+                        <!-- Rendered via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/products-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const products = getProducts();
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <img src="${p.image_path || 'assets/uploads/placeholder.png'}" class="product-thumb" alt="">
+                            <strong style="color: var(--text-main);">${escapeHtml(p.title)}</strong>
+                        </div>
+                    </td>
+                    <td>${escapeHtml(p.seller_name)}</td>
+                    <td>
+                        <strong>${escapeHtml(p.category_name)}</strong>
+                        <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
+                            <span class="badge badge-dept" style="font-size: 0.68rem;">${escapeHtml(p.department)}</span>
+                            <span class="badge badge-uni" style="font-size: 0.68rem;">${escapeHtml(p.university)}</span>
+                        </div>
+                    </td>
+                    <td>LKR ${numberFormat(p.price)}</td>
+                    <td><span class="badge badge-approved">Approved</span></td>
+                </tr>
+            `).join('');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart & Checkout - EcoMart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">E</div>
+                <span>EcoMart</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Marketplace</a></li>
+                <li><a href="dashboard.html" class="nav-link">My Dashboard</a></li>
+                <li><a href="admin.html" class="nav-link" style="color: #38bdf8;">Admin Panel</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container" style="padding: 40px 24px; min-height: 70vh;">
+        <h1 style="font-weight: 800; font-size: 2.2rem; margin-bottom: 30px; color: var(--text-main); font-family: 'Space Grotesk', sans-serif;">
+            🛒 Shopping Cart & Checkout
+        </h1>
+
+        <div id="cart-content-wrapper">
+            <!-- Dynamic Cart Items rendered via JS -->
+        </div>
+    </div>
+
+    <script src="assets/js/products-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCartPage();
+        });
+
+        function renderCartPage() {
+            const wrapper = document.getElementById('cart-content-wrapper');
+            const cart = getCart();
+
+            if (cart.length === 0) {
+                wrapper.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; background: white; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🛒</div>
+                        <h2 style="font-size: 1.5rem; color: var(--text-main); margin-bottom: 10px;">Your cart is empty</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 24px;">Explore our marketplace to find great student products, services, and Study Video Packs.</p>
+                        <a href="index.html" class="btn btn-primary">Start Browsing</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let total = 0;
+            let rowsHtml = cart.map(item => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                return `
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                <img src="${item.image_path || 'assets/uploads/placeholder.png'}" class="product-thumb" alt="" style="width: 54px; height: 54px; min-width: 54px; max-width: 54px; max-height: 54px; object-fit: cover; border-radius: 8px; flex-shrink: 0;">
+                                <div>
+                                    <strong style="display: block; color: var(--text-main);">${escapeHtml(item.title)}</strong>
+                                    ${item.video_url ? '<span style="font-size: 0.75rem; color: var(--primary-dark); font-weight: 700;">🎥 Includes Online Video Stream</span>' : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td>${escapeHtml(item.seller_name || 'john')}</td>
+                        <td>LKR ${numberFormat(item.price)}</td>
+                        <td>
+                            <input type="number" value="${item.quantity}" min="1" style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); text-align: center;" onchange="updateQty(${item.product_id}, this.value)">
+                        </td>
+                        <td><strong>LKR ${numberFormat(subtotal)}</strong></td>
+                        <td>
+                            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;" onclick="removeFromCart(${item.product_id})">Remove</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            wrapper.innerHTML = `
+                <div style="display: flex; gap: 40px; flex-wrap: wrap;">
+                    <div style="flex: 2; min-width: 320px;">
+                        <div class="table-container" style="margin-top: 0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product / Video Pack</th>
+                                        <th>Seller</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${rowsHtml}</tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                            <a href="index.html" class="btn btn-secondary">← Continue Shopping</a>
+                        </div>
+                    </div>
+
+                    <div style="flex: 1; min-width: 320px;">
+                        <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 30px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 20px;">
+                            <h3 style="font-size: 1.25rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 5px;">Order Summary</h3>
+                            
+                            <div style="display: flex; justify-content: space-between; font-size: 0.95rem; color: var(--text-muted);">
+                                <span>Subtotal</span>
+                                <span>LKR ${numberFormat(total)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.95rem; color: var(--text-muted);">
+                                <span>Delivery / Video Access</span>
+                                <span style="color: var(--success); font-weight: 600;">INSTANT / FREE</span>
+                            </div>
+                            
+                            <div style="border-top: 1px solid var(--border); padding-top: 15px; display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; color: var(--text-main);">
+                                <span>Total</span>
+                                <span style="color: var(--primary-dark);">LKR ${numberFormat(total)}</span>
+                            </div>
+
+                            <!-- Choose Pay Options Form -->
+                            <form onsubmit="handleCheckout(event)" style="display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 10px;">
+                                <h4 style="font-size: 1rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; color: var(--text-main);">💳 Choose Pay Option</h4>
+                                
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <label style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--primary); border-radius: var(--radius-sm); background: rgba(0, 180, 216, 0.05); cursor: pointer;">
+                                        <input type="radio" name="payment_method" value="card" checked>
+                                        <div>
+                                            <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">💳 Online Credit / Debit Card</strong>
+                                            <small style="font-size: 0.78rem; color: var(--text-muted);">Visa, MasterCard, AMEX (Instant Video Unlock)</small>
+                                        </div>
+                                    </label>
+
+                                    <label style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-main); cursor: pointer;">
+                                        <input type="radio" name="payment_method" value="bank_transfer">
+                                        <div>
+                                            <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">🏦 Bank Direct Transfer / QR</strong>
+                                            <small style="font-size: 0.78rem; color: var(--text-muted);">BOC / Commercial Bank NSBM Account</small>
+                                        </div>
+                                    </label>
+
+                                    <label style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-main); cursor: pointer;">
+                                        <input type="radio" name="payment_method" value="cash_on_campus">
+                                        <div>
+                                            <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">💵 Cash on Campus / Meetup</strong>
+                                            <small style="font-size: 0.78rem; color: var(--text-muted);">Meet seller on campus / Student Union</small>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" style="font-size: 0.82rem;">Delivery Location / Notes</label>
+                                    <input type="text" id="delivery_location" class="form-control" value="Online Access / Faculty Lounge" required style="padding: 10px; font-size: 0.85rem;">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; margin-top: 10px; font-size: 1rem;">
+                                    Confirm & Complete Purchase 🚀
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateQty(productId, qty) {
+            let cart = getCart();
+            const item = cart.find(i => i.product_id == productId);
+            if (item) {
+                item.quantity = parseInt(qty) || 1;
+                localStorage.setItem('nsbm_cart', JSON.stringify(cart));
+                renderCartPage();
+            }
+        }
+
+        function removeFromCart(productId) {
+            let cart = getCart();
+            cart = cart.filter(i => i.product_id != productId);
+            localStorage.setItem('nsbm_cart', JSON.stringify(cart));
+            renderCartPage();
+            updateCartBadge();
+        }
+
+        function handleCheckout(e) {
+            e.preventDefault();
+            const cart = getCart();
+            const method = document.querySelector('input[name="payment_method"]:checked').value;
+            const location = document.getElementById('delivery_location').value;
+
+            // Save purchase history item into localStorage
+            let purchases = JSON.parse(localStorage.getItem('nsbm_purchases') || '[]');
+            cart.forEach(item => {
+                purchases.push({
+                    order_id: Math.floor(10000 + Math.random() * 90000),
+                    product_id: item.product_id,
+                    title: item.title,
+                    price: item.price,
+                    payment_method: method,
+                    delivery_location: location,
+                    created_at: new Date().toLocaleDateString()
+                });
+            });
+            localStorage.setItem('nsbm_purchases', JSON.stringify(purchases));
+            localStorage.removeItem('nsbm_cart');
+            
+            alert('🎉 Simulated Purchase Successful! Video Packs unlocked in your Dashboard.');
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
